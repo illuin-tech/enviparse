@@ -1,0 +1,24 @@
+[project]
+name = "envify"
+version = "0.0.0"
+description = "envify help you manage your application properties using environment variabl"
+authors = ["Illuin technology <contact@illuin.tech>"]
+requires-python = ">=3.9"
+classifiers=[
+    "Development Status :: 5 - Production/Stable",
+    "Intended Audience :: Developers",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+]
+dependencies = []
+
+[project.optional-dependencies]
+attr = [
+    "attrs>=19.2.0,<24.0.0"
+]
+opyoid = [
+    "opyoid>=2.0.0,<2.1.0"
+]
