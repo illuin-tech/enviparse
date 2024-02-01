@@ -1,0 +1,50 @@
+.python_template:
+  image: python:3.9
+  interruptible: true
+  needs: [ ]
+  before_script:
+    - python -m venv env
+    - . ./env/bin/activate
+    - pip install --upgrade "pip<23.1.0"
+    - pip install -r dev.requirements.txt -U --upgrade-strategy=eager
+  rules:
+    - if: $CI_PIPELINE_SOURCE == 'merge_request_event'
+  tags:
+    - docker
+
+test_python:
+  extends: .python_template
+  stage: test
+  script:
+    - coverage run -m pytest --junitxml=report.xml ./tests
+    - coverage xml -o coverage.xml
+    - coverage report -m --skip-covered
+  coverage: '/\d+\%\s*$/'
+  artifacts:
+    paths:
+      - ".coverage"
+    expire_in: 1 hour
+    when: always
+    reports:
+      junit: bot-core/report.xml
+
+lint_python:
+  extends: .python_template
+  stage: test
+  script:
+    - black envify tests --check -l 120
+
+publish_python:
+  extends: .python_template
+  stage: publish
+  script:
+    - echo "$CI_COMMIT_TAG" > VERSION
+    - pip install build
+    - python -m build -s -w --no-isolation
+    - twine upload dist/envify-${CI_COMMIT_TAG/-/\+}*
+  rules:
+    - if: $CI_COMMIT_TAG
+
+stages:
+  - test
+  - publish

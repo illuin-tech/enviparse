@@ -1,0 +1,33 @@
+[project]
+name = "envify"
+dynamic = ["version"]
+description = "envify help you manage your application properties using environment variabl"
+authors = [
+    {name = "Illuin technology", email = "contact@illuin.tech"},
+]
+requires-python = ">=3.9"
+classifiers=[
+    "Development Status :: 5 - Production/Stable",
+    "Intended Audience :: Developers",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+]
+dependencies = []
+
+[project.optional-dependencies]
+attr = [
+    "attrs>=19.2.0,<24.0.0"
+]
+opyoid = [
+    "opyoid>=1.0.0,<2.1.0"
+]
+
+[build-system]
+requires = ["setuptools", "setuptools-scm"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.dynamic]
+version = {file = "VERSION"}
