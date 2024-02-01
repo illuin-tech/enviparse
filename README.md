@@ -29,13 +29,6 @@ You can parse environment variable with :
 ```python
 import dataclasses
 from envify import Envify
-import os
-
-os.environ["DATABASE_CONFIG_USERNAME"]="postgres"
-os.environ["DATABASE_CONFIG_PASSWORD"]="password"
-os.environ["DATABASE_HOST"]="127.0.0.1"
-os.environ["DATABASE_PORT"]="5432"
-os.environ["DATABASE_NAME"]="appdb"
 
 @dataclasses.dataclass
 class DatabaseConfig:
