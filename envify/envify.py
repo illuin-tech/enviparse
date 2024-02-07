@@ -1,4 +1,5 @@
 import dataclasses
+import enum
 import os
 from typing import Type, Optional, TypeVar, List, get_args, Union, get_origin, Callable
 
@@ -49,6 +50,8 @@ class Envify:
             return self._get_dataclass_from_env(prefix, t_type)
         if ATTR_AVAILABLE and hasattr(t_type, "__attrs_attrs__"):
             return self._get_attr_class_from_env(prefix, t_type)
+        if self._is_enum_type(t_type):
+            return self._get_enum_from_env(prefix, t_type)
         raise UnexpectedTypeError(t_type.__name__, prefix)
 
     @staticmethod
@@ -64,6 +67,17 @@ class Envify:
             and len(type_args) == 2
             and any(type_arg == type(None) for type_arg in type_args)
         )
+
+    @staticmethod
+    def _is_enum_type(t_class: Type[ClassType]) -> bool:
+        if not issubclass(t_class, enum.Enum):
+            return False
+
+        # for now only int or string enum are supported
+        for enum_value in t_class:
+            if type(enum_value.value) != int and type(enum_value.value) != str:
+                return False
+        return True
 
     @staticmethod
     def _has_env_var_with_prefix(prefix: str) -> bool:
@@ -168,3 +182,14 @@ class Envify:
                 else:
                     raise NestedMissingEnvironmentVariableError(field_env_var_prefix) from error
         return attr_class(**field_values)
+
+    @staticmethod
+    def _get_enum_from_env(prefix: str, enum_class: Type[enum.Enum]) -> enum.Enum:
+        env_var_value = os.environ.get(prefix)
+        if env_var_value is None:
+            raise MissingEnvironmentVariableError(prefix)
+
+        for enum_value in enum_class:
+            if str(enum_value.value) == env_var_value:
+                return enum_value
+        raise CastError(prefix, enum_class.__name__)
