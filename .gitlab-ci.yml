@@ -10,8 +10,8 @@ workflow:
   interruptible: true
   needs: [ ]
   before_script:
-    - python -m venv env
-    - . ./env/bin/activate
+    - python -m venv venv
+    - . ./venv/bin/activate
     - pip install --upgrade "pip<23.1.0"
     - pip install -r dev.requirements.txt -U --upgrade-strategy=eager
   rules:
@@ -33,13 +33,16 @@ test_python:
     expire_in: 1 hour
     when: always
     reports:
-      junit: bot-core/report.xml
+      junit: report.xml
+      coverage_report:
+        coverage_format: cobertura
+        path: coverage.xml
 
 lint_python:
   extends: .python_template
   stage: test
   script:
-    - black envify tests --check -l 120
+    - black . --check -l 120 --exclude=venv
 
 publish_python:
   extends: .python_template

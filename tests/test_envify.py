@@ -1,4 +1,5 @@
 import dataclasses
+import enum
 import os
 import unittest
 from typing import Optional, List
@@ -322,3 +323,93 @@ class TestEnvify(unittest.TestCase):
         with self.assertRaises(UnknownTypeError) as expected:
             self.envify.envify(self.TEST_PREFIX, List)
         self.assertEqual(f'Unknown generic type for property at path "{self.TEST_PREFIX}"', str(expected.exception))
+
+    def test_envify_should_return_enum_with_str_values(self):
+        class MyEnum(enum.Enum):
+            VAL1 = "val1"
+            VAL2 = "val2"
+
+        os.environ[self.TEST_PREFIX] = "val1"
+        self.assertEqual(MyEnum.VAL1, self.envify.envify(self.TEST_PREFIX, MyEnum))
+        os.environ[self.TEST_PREFIX] = "val2"
+        self.assertEqual(MyEnum.VAL2, self.envify.envify(self.TEST_PREFIX, MyEnum))
+
+        with self.assertRaises(CastError) as expected:
+            os.environ[self.TEST_PREFIX] = "unknown"
+            self.envify.envify(self.TEST_PREFIX, MyEnum)
+        self.assertEqual(f"Failed to convert '{self.TEST_PREFIX}' to MyEnum.", str(expected.exception))
+
+    def test_envify_should_return_enum_with_int_values(self):
+        class MyEnum(enum.Enum):
+            VAL1 = 1
+            VAL2 = 2
+
+        os.environ[self.TEST_PREFIX] = "1"
+        self.assertEqual(MyEnum.VAL1, self.envify.envify(self.TEST_PREFIX, MyEnum))
+        os.environ[self.TEST_PREFIX] = "2"
+        self.assertEqual(MyEnum.VAL2, self.envify.envify(self.TEST_PREFIX, MyEnum))
+
+        with self.assertRaises(CastError) as expected:
+            os.environ[self.TEST_PREFIX] = "3"
+            self.envify.envify(self.TEST_PREFIX, MyEnum)
+        self.assertEqual(f"Failed to convert '{self.TEST_PREFIX}' to MyEnum.", str(expected.exception))
+
+    def test_envify_should_return_enum_with_auto_values(self):
+        class MyEnum(enum.Enum):
+            VAL1 = enum.auto()
+            VAL2 = enum.auto()
+
+        os.environ[self.TEST_PREFIX] = "1"
+        self.assertEqual(MyEnum.VAL1, self.envify.envify(self.TEST_PREFIX, MyEnum))
+        os.environ[self.TEST_PREFIX] = "2"
+        self.assertEqual(MyEnum.VAL2, self.envify.envify(self.TEST_PREFIX, MyEnum))
+
+        with self.assertRaises(CastError) as expected:
+            os.environ[self.TEST_PREFIX] = "3"
+            self.envify.envify(self.TEST_PREFIX, MyEnum)
+        self.assertEqual(f"Failed to convert '{self.TEST_PREFIX}' to MyEnum.", str(expected.exception))
+
+    def test_envify_should_raise_error_if_enum_type_values_are_not_int_or_string(self):
+        class CustomObject:
+            def __init__(self, value):
+                self.value = value
+
+            def __hash__(self):
+                return hash(self.value)
+
+        class MyEnum(enum.Enum):
+            VALUE1 = CustomObject("a")
+            VALUE2 = CustomObject("b")
+
+        with self.assertRaises(UnexpectedTypeError) as expected:
+            os.environ[self.TEST_PREFIX] = "1"
+            self.envify.envify(self.TEST_PREFIX, MyEnum)
+        self.assertEqual('Unsupported type "MyEnum" for property at path "TEST_ENV_VARS"', str(expected.exception))
+
+    def test_envify_should_return_exception_if_no_env_value_when_parsing_enum(self):
+        class MyEnum(enum.Enum):
+            VAL1 = 1
+            VAL2 = 2
+
+        with self.assertRaises(MissingEnvironmentVariableError) as expected:
+            self.envify.envify(self.TEST_PREFIX, MyEnum)
+        self.assertEqual("Environment variable 'TEST_ENV_VARS' is not set.", str(expected.exception))
+
+    def test_envify_with_nested_enum(self):
+        class MyEnum(enum.Enum):
+            VAL1 = 1
+            VAL2 = 2
+
+        @dataclasses.dataclass
+        class DataClass:
+            a: MyEnum
+            b: MyEnum = MyEnum.VAL2
+
+        os.environ[f"{self.TEST_PREFIX}_A"] = "1"
+        self.assertEqual(
+            DataClass(
+                a=MyEnum.VAL1,
+                b=MyEnum.VAL2,
+            ),
+            self.envify.envify(self.TEST_PREFIX, DataClass),
+        )

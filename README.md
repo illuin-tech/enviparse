@@ -11,6 +11,7 @@ Supported types are :
 * bool
 * optional
 * list
+* enum (with int or string values only)
 * `@attr` annotated class
 * `@dataclasses.dataclass` annotated class
 
