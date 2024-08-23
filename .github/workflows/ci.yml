@@ -1,0 +1,85 @@
+name: CI
+
+on:
+  push:
+  release:
+    types:
+      - created
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: [ '3.9', '3.10', '3.11', '3.12' ]
+
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -e '.[dev,attr,opyoid]'
+      - name: Test with pytest
+        run: |
+          py.test --cov-report xml --cov-report term --cov=envify ./tests
+      - name: Codecov
+        if: matrix.python-version == '3.11'
+        uses: codecov/codecov-action@v4
+        with:
+          fail_ci_if_error: true
+          token: ${{ secrets.CODECOV_TOKEN }}
+
+  lint:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: [ '3.9', '3.10', '3.11', '3.12' ]
+
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -e '.[dev,attr,opyoid]'
+      - name: Lint with black
+        run: |
+          black . --check -l 120
+      - name: Lint with pylint
+        run: |
+          pylint envify
+          pylint tests --disable=too-many-public-methods,too-many-instance-attributes,too-many-lines
+
+  deploy:
+    needs: [ test, lint ]
+    runs-on: ubuntu-latest
+    if: ${{ github.event_name == 'release' }}
+
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -e '.[dev,attr,opyoid]'
+      - name: Build and publish
+        env:
+          TWINE_USERNAME: __token__
+          TWINE_PASSWORD: ${{ secrets.PYPI_TOKEN }}
+        run: |
+          sed -i "s|version = \"0.0.0\"|version = \"${GITHUB_REF##*/}\"|g" pyproject.toml
+          python -m build
+          twine upload dist/*

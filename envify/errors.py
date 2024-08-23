@@ -3,8 +3,8 @@ class EnvifyError(Exception):
 
 
 class UnexpectedTypeError(EnvifyError):
-    def __init__(self, type: str, path: str):
-        super().__init__(f'Unsupported type "{type}" for property at path "{path}"')
+    def __init__(self, used_type: str, path: str):
+        super().__init__(f'Unsupported type "{used_type}" for property at path "{path}"')
 
 
 class UnknownTypeError(EnvifyError):

@@ -18,7 +18,7 @@ try:
 except ImportError:
     ATTR_AVAILABLE = False
 
-ClassType = TypeVar("ClassType")
+ClassTypeT = TypeVar("ClassTypeT")
 
 
 class Envify:
@@ -30,11 +30,11 @@ class Envify:
             lambda prefix, suffix: f"{prefix.upper()}_{suffix.upper()}"
         )
 
-    def envify(
+    def envify(  # pylint: disable=too-many-return-statements
         self,
         prefix: str,
-        t_type: Type[ClassType],
-    ) -> ClassType:
+        t_type: Type[ClassTypeT],
+    ) -> ClassTypeT:
         if t_type in (int, float, str):
             return self._get_primitive_type_from_env(
                 prefix,
@@ -55,11 +55,11 @@ class Envify:
         raise UnexpectedTypeError(t_type.__name__, prefix)
 
     @staticmethod
-    def _is_list_type(t_class: Type[ClassType]) -> bool:
+    def _is_list_type(t_class: Type[ClassTypeT]) -> bool:
         return get_origin(t_class) == list
 
     @staticmethod
-    def _is_optional_type(t_class: Type[ClassType]) -> bool:
+    def _is_optional_type(t_class: Type[ClassTypeT]) -> bool:
         # Optional[T] is an alias for Union[T, None]
         type_args = get_args(t_class)
         return (
@@ -69,13 +69,13 @@ class Envify:
         )
 
     @staticmethod
-    def _is_enum_type(t_class: Type[ClassType]) -> bool:
+    def _is_enum_type(t_class: Type[ClassTypeT]) -> bool:
         if not issubclass(t_class, enum.Enum):
             return False
 
         # for now only int or string enum are supported
         for enum_value in t_class:
-            if type(enum_value.value) != int and type(enum_value.value) != str:
+            if not isinstance(enum_value.value, int) and not isinstance(enum_value.value, str):
                 return False
         return True
 
@@ -116,8 +116,8 @@ class Envify:
     def _get_list_type_from_env(
         self,
         prefix: str,
-        attr_class: Type[List[ClassType]],
-    ) -> List[ClassType]:
+        attr_class: Type[List[ClassTypeT]],
+    ) -> List[ClassTypeT]:
         type_hints = get_args(attr_class)
         if len(type_hints) == 0:
             raise UnknownTypeError(prefix)
@@ -135,20 +135,19 @@ class Envify:
     def _get_optional_type_from_env(
         self,
         prefix: str,
-        attr_class: Type[Optional[ClassType]],
-    ) -> Optional[ClassType]:
+        attr_class: Type[Optional[ClassTypeT]],
+    ) -> Optional[ClassTypeT]:
         type_hints = get_args(attr_class)
         optional_type = type_hints[0]
         if self._has_env_var_with_prefix(prefix):
             return self.envify(prefix, optional_type)
-        else:
-            return None
+        return None
 
     def _get_dataclass_from_env(
         self,
         prefix: str,
-        attr_class: Type[ClassType],
-    ) -> ClassType:
+        attr_class: Type[ClassTypeT],
+    ) -> ClassTypeT:
         fields = dataclasses.fields(attr_class)
         field_values = {}
         for field in fields:
@@ -166,8 +165,8 @@ class Envify:
     def _get_attr_class_from_env(
         self,
         prefix: str,
-        attr_class: Type[ClassType],
-    ) -> ClassType:
+        attr_class: Type[ClassTypeT],
+    ) -> ClassTypeT:
         field_dict = attr.fields_dict(attr_class)
         # if variable exist with prefix, let's try to create the attr class
         field_values = {}
