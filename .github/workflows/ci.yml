@@ -28,7 +28,7 @@ jobs:
           pip install -e '.[dev,attr,opyoid]'
       - name: Test with pytest
         run: |
-          py.test --cov-report xml --cov-report term --cov=envipy ./tests
+          py.test --cov-report xml --cov-report term --cov=enviparse ./tests
       - name: Codecov
         if: matrix.python-version == '3.11'
         uses: codecov/codecov-action@v4
@@ -57,7 +57,7 @@ jobs:
           black . --check -l 120
       - name: Lint with pylint
         run: |
-          pylint envipy
+          pylint enviparse
           pylint tests --disable=too-many-public-methods,too-many-instance-attributes,too-many-lines
 
   deploy:

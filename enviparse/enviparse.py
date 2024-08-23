@@ -21,7 +21,7 @@ except ImportError:
 ClassTypeT = TypeVar("ClassTypeT")
 
 
-class Envipy:
+class Enviparse:
     def __init__(
         self,
         concat_env_name_func: Optional[Callable[[str, str], str]] = None,
@@ -30,7 +30,7 @@ class Envipy:
             lambda prefix, suffix: f"{prefix.upper()}_{suffix.upper()}"
         )
 
-    def envipy(  # pylint: disable=too-many-return-statements
+    def parse(  # pylint: disable=too-many-return-statements
         self,
         prefix: str,
         t_type: Type[ClassTypeT],
@@ -127,7 +127,7 @@ class Envipy:
         index = 0
         while self._has_env_var_with_prefix(self._concat_env_name_func(prefix, str(index))):
             list_item_env_var_name_prefix = self._concat_env_name_func(prefix, str(index))
-            item_env_var_value = self.envipy(list_item_env_var_name_prefix, list_item_type)
+            item_env_var_value = self.parse(list_item_env_var_name_prefix, list_item_type)
             values.append(item_env_var_value)
             index += 1
         return values
@@ -140,7 +140,7 @@ class Envipy:
         type_hints = get_args(attr_class)
         optional_type = type_hints[0]
         if self._has_env_var_with_prefix(prefix):
-            return self.envipy(prefix, optional_type)
+            return self.parse(prefix, optional_type)
         return None
 
     def _get_dataclass_from_env(
@@ -154,7 +154,7 @@ class Envipy:
             field_env_var_prefix = self._concat_env_name_func(prefix, field.name)
 
             try:
-                field_values[field.name] = self.envipy(prefix=field_env_var_prefix, t_type=field.type)
+                field_values[field.name] = self.parse(prefix=field_env_var_prefix, t_type=field.type)
             except MissingEnvironmentVariableError as error:
                 if field.default is not None and field.default is not dataclasses.MISSING:
                     field_values[field.name] = field.default
@@ -174,7 +174,7 @@ class Envipy:
             field_env_var_prefix = self._concat_env_name_func(prefix, field_name)
 
             try:
-                field_values[field_name] = self.envipy(prefix=field_env_var_prefix, t_type=field.type)
+                field_values[field_name] = self.parse(prefix=field_env_var_prefix, t_type=field.type)
             except MissingEnvironmentVariableError as error:
                 if field.default is not None and field.default is not attr.NOTHING:
                     field_values[field_name] = field.default

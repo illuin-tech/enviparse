@@ -1,7 +1,7 @@
 [project]
-name = "envipy"
+name = "enviparse"
 dynamic = ["version"]
-description = "envipy help you manage your application properties using environment variabl"
+description = "enviparse help you manage your application properties using environment variabl"
 authors = [
     {name = "Illuin technology", email = "contact@illuin.tech"},
 ]

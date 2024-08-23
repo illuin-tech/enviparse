@@ -2,7 +2,7 @@
 
 ## 2.0.0
 ### Breaking changes
-- Update project name to `envipy`
+- Update project name to `enviparse`
 
 ## 1.1.1
 ### Fixes
