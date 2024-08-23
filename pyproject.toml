@@ -32,7 +32,7 @@ dev = [
     "pylint==3.2.5",
     "setuptools==70.3.0",
     "twine==5.1.1",
-    "wheel==0.43.0",
+    "wheel==0.44.0",
 ]
 
 [build-system]
