@@ -1,5 +1,9 @@
 # Envify
 
+![CI](https://github.com/illuin-tech/envify/workflows/CI/badge.svg)
+[![codecov](https://codecov.io/gh/illuin-tech/envify/branch/main/graph/badge.svg)](https://codecov.io/gh/illuin-tech/envify)
+
+
 ## Description
 
 Envify let you simply create dataclasses from environment variable.
