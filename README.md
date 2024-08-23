@@ -1,12 +1,12 @@
-# Envify
+# Envipy
 
-![CI](https://github.com/illuin-tech/envify/workflows/CI/badge.svg)
-[![codecov](https://codecov.io/gh/illuin-tech/envify/branch/main/graph/badge.svg)](https://codecov.io/gh/illuin-tech/envify)
+![CI](https://github.com/illuin-tech/envipy/workflows/CI/badge.svg)
+[![codecov](https://codecov.io/gh/illuin-tech/envipy/branch/main/graph/badge.svg)](https://codecov.io/gh/illuin-tech/envipy)
 
 
 ## Description
 
-Envify let you simply create dataclasses from environment variable.
+Envipy let you simply create dataclasses from environment variable.
 
 Supported types are : 
 * int
@@ -31,9 +31,11 @@ DATABASE_CONFIG_DATABASE_NAME=appdb
 ```
 
 You can parse environment variable with :
+
 ```python
 import dataclasses
-from envify import Envify
+from envipy import Envipy
+
 
 @dataclasses.dataclass
 class DatabaseConfig:
@@ -43,7 +45,8 @@ class DatabaseConfig:
     port: int
     database_name: str
 
-db_config = Envify().envify("DATABASE_CONFIG", DatabaseConfig)
+
+db_config = Envipy().envipy("DATABASE_CONFIG", DatabaseConfig)
 print(db_config)
 ```
 

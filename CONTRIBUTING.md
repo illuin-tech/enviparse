@@ -3,7 +3,7 @@
 We welcome everyone to help us on this project.
 
 All bug reports, feature requests and questions should be filed at the
-[GitHub issues page](https://github.com/illuin-tech/envify/issues).
+[GitHub issues page](https://github.com/illuin-tech/envipy/issues).
 
 You can open your own Pull Request after discussing the need for those changes in an issue.
 
@@ -21,6 +21,6 @@ Run `python -m unitttest discover` to run the tests.
 
 Run these commands to check the files linting:
 ```shell script
-pylint envify
+pylint envipy
 pylint tests --disable=too-many-public-methods,too-many-instance-attributes
 ```
