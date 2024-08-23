@@ -1,5 +1,9 @@
 # Changelog
 
+## 2.0.0
+### Breaking changes
+- Update project name to `envipy`
+
 ## 1.1.1
 ### Fixes
 - Project has been moved to github
