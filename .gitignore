@@ -3,4 +3,4 @@
 __pycache__
 coverage.xml
 .coverage
-envipy.egg-info/*
+enviparse.egg-info/*

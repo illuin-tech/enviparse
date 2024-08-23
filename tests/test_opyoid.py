@@ -1,10 +1,10 @@
 import os
 import unittest
 
-from envipy.opyoid import envipy_provider
+from enviparse.opyoid import enviparse_provider
 
 
-class TestEnvipyOpyoidProviderFactory(unittest.TestCase):
+class TestEnviparseOpyoidProviderFactory(unittest.TestCase):
     test_prefix = "TEST_ENV_VARS"
 
     def setUp(self) -> None:
@@ -20,5 +20,5 @@ class TestEnvipyOpyoidProviderFactory(unittest.TestCase):
 
     def test_should_provide(self):
         os.environ[self.test_prefix] = "value"
-        provider_type = envipy_provider(self.test_prefix, str)
+        provider_type = enviparse_provider(self.test_prefix, str)
         self.assertEqual("value", provider_type().get())
