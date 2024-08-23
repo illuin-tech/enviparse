@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.1.1
+### Fixes
+- Project has been moved to github
+
 ## 1.1.0
 ### Feature
 - Add support for enum type (with int or string values only)
