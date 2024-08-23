@@ -3,7 +3,7 @@ attrs>=19.2.0,<24.0.0
 opyoid>=1.0.0,<2.1.0
 
 # Lint
-black==24.1.1
+black==24.3.0
 
 # Test
 pytest==8.0.0
