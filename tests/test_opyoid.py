@@ -5,7 +5,7 @@ from envify.opyoid import envify_provider
 
 
 class TestEnvifyOpyoidProviderFactory(unittest.TestCase):
-    TEST_PREFIX = "TEST_ENV_VARS"
+    test_prefix = "TEST_ENV_VARS"
 
     def setUp(self) -> None:
         self.clear_test_env_vars()
@@ -14,11 +14,11 @@ class TestEnvifyOpyoidProviderFactory(unittest.TestCase):
         self.clear_test_env_vars()
 
     def clear_test_env_vars(self) -> None:
-        for env in os.environ.keys():
-            if env.startswith(self.TEST_PREFIX):
+        for env in os.environ:
+            if env.startswith(self.test_prefix):
                 del os.environ[env]
 
     def test_should_provide(self):
-        os.environ[self.TEST_PREFIX] = "value"
-        provider_type = envify_provider(self.TEST_PREFIX, str)
-        self.assertEquals("value", provider_type().get())
+        os.environ[self.test_prefix] = "value"
+        provider_type = envify_provider(self.test_prefix, str)
+        self.assertEqual("value", provider_type().get())
