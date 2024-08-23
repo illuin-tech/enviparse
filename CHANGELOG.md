@@ -1,4 +1,7 @@
 # Changelog
+## 2.0.1
+### Fixes
+- Add missing URLs in pyproject.toml
 
 ## 2.0.0
 ### Breaking changes
