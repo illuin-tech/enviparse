@@ -20,7 +20,7 @@ dependencies = []
 
 [project.optional-dependencies]
 attr = [
-    "attrs>=19.2.0,<25.0.0"
+    "attrs>=19.2.0,<26.0.0"
 ]
 opyoid = [
     "opyoid>=1.0.0,<3.1.0"
