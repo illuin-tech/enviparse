@@ -28,7 +28,7 @@ opyoid = [
 dev = [
     "black==25.1.0",
     "build==1.2.2.post1",
-    "pytest==8.3.4",
+    "pytest==8.3.5",
     "pytest-cov==6.0.0",
     "pylint==3.3.4",
     "setuptools==75.6.0",
